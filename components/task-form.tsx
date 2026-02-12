@@ -117,6 +117,8 @@ const AGENT_MODELS = {
     { value: 'claude-sonnet-4-5', label: 'Sonnet 4.5' },
     { value: 'claude-opus-4-5', label: 'Opus 4.5' },
     { value: 'claude-haiku-4-5', label: 'Haiku 4.5' },
+    { value: 'moonshot/kimi-k2', label: 'Kimi K2' },
+    { value: 'zai/glm-4.5', label: 'GLM 4.5' },
   ],
 } as const
 
@@ -140,7 +142,7 @@ const AGENT_API_KEY_REQUIREMENTS: Record<string, Provider[]> = {
   opencode: [], // Will be determined dynamically based on selected model
 }
 
-type Provider = 'openai' | 'gemini' | 'cursor' | 'anthropic' | 'aigateway'
+type Provider = 'openai' | 'gemini' | 'cursor' | 'anthropic' | 'aigateway' | 'moonshot' | 'zai'
 
 // Helper to determine which API key is needed for opencode based on model
 const getOpenCodeRequiredKeys = (model: string): Provider[] => {
@@ -148,12 +150,24 @@ const getOpenCodeRequiredKeys = (model: string): Provider[] => {
   if (model.includes('claude') || model.includes('sonnet') || model.includes('opus')) {
     return ['anthropic']
   }
-  // Check if it's an OpenAI/GPT model (uses AI Gateway)
-  if (model.includes('gpt')) {
-    return ['aigateway']
+  // Check if it's a Moonshot/Kimi model
+  if (model.includes('moonshot') || model.includes('kimi')) {
+    return ['moonshot']
   }
-  // Fallback to both if we can't determine
-  return ['aigateway', 'anthropic']
+  // Check if it's a Z.AI/GLM model
+  if (model.includes('zai') || model.includes('glm')) {
+    return ['zai']
+  }
+  // Check if it's an OpenAI/GPT model
+  if (model.includes('gpt') || model.includes('openai')) {
+    return ['openai']
+  }
+  // Check if it's a Gemini model
+  if (model.includes('gemini')) {
+    return ['gemini']
+  }
+  // Fallback to OpenAI and Anthropic when we can't determine provider
+  return ['openai', 'anthropic']
 }
 
 export function TaskForm({
@@ -368,6 +382,8 @@ export function TaskForm({
             cursor: 'Cursor',
             gemini: 'Gemini',
             aigateway: 'AI Gateway',
+            moonshot: 'Moonshot',
+            zai: 'Z.AI',
           }
           const providerName = providerNames[data.provider] || data.provider
 
