@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
   const { owner, repo } = await params
 
   return {
-    title: `${owner}/${repo} - Coding Agent`,
+    title: `${owner}/${repo} - Koder Agent Platform`,
     description: `Create AI-powered tasks for ${owner}/${repo}`,
   }
 }
