@@ -57,8 +57,14 @@ export async function executeOpenCodeInSandbox(
     await logger.info('Starting OpenCode agent execution...')
 
     // Check if we have required environment variables for OpenCode
-    if (!process.env.OPENAI_API_KEY && !process.env.ANTHROPIC_API_KEY) {
-      const errorMsg = 'OpenAI API key or Anthropic API key is required for OpenCode agent'
+    if (
+      !process.env.OPENAI_API_KEY &&
+      !process.env.ANTHROPIC_API_KEY &&
+      !process.env.GEMINI_API_KEY &&
+      !process.env.MOONSHOT_API_KEY &&
+      !process.env.ZAI_API_KEY
+    ) {
+      const errorMsg = 'OpenCode API key is required for the selected model provider'
       await logger.error(errorMsg)
       return {
         success: false,
@@ -282,6 +288,69 @@ EOF`
       }
     }
 
+    if (process.env.GEMINI_API_KEY) {
+      console.log('Configuring Gemini provider...')
+      if (logger) {
+        await logger.info('Configuring Gemini provider...')
+      }
+
+      const geminiAuthResult = await runCommandInSandbox(sandbox, 'sh', [
+        '-c',
+        `echo "${process.env.GEMINI_API_KEY}" | opencode auth add gemini`,
+      ])
+
+      if (!geminiAuthResult.success) {
+        console.warn('Failed to configure Gemini provider, but continuing...')
+        if (logger) {
+          await logger.info('Failed to configure Gemini provider, but continuing...')
+        }
+      } else {
+        authSetupCommands.push('Gemini provider configured')
+      }
+    }
+
+    if (process.env.MOONSHOT_API_KEY) {
+      console.log('Configuring Moonshot provider...')
+      if (logger) {
+        await logger.info('Configuring Moonshot provider...')
+      }
+
+      const moonshotAuthResult = await runCommandInSandbox(sandbox, 'sh', [
+        '-c',
+        `echo "${process.env.MOONSHOT_API_KEY}" | opencode auth add moonshot`,
+      ])
+
+      if (!moonshotAuthResult.success) {
+        console.warn('Failed to configure Moonshot provider, but continuing...')
+        if (logger) {
+          await logger.info('Failed to configure Moonshot provider, but continuing...')
+        }
+      } else {
+        authSetupCommands.push('Moonshot provider configured')
+      }
+    }
+
+    if (process.env.ZAI_API_KEY) {
+      console.log('Configuring Z.AI provider...')
+      if (logger) {
+        await logger.info('Configuring Z.AI provider...')
+      }
+
+      const zaiAuthResult = await runCommandInSandbox(sandbox, 'sh', [
+        '-c',
+        `echo "${process.env.ZAI_API_KEY}" | opencode auth add zai`,
+      ])
+
+      if (!zaiAuthResult.success) {
+        console.warn('Failed to configure Z.AI provider, but continuing...')
+        if (logger) {
+          await logger.info('Failed to configure Z.AI provider, but continuing...')
+        }
+      } else {
+        authSetupCommands.push('Z.AI provider configured')
+      }
+    }
+
     // Initialize OpenCode for the project
     console.log('Initializing OpenCode for the project...')
     if (logger) {
@@ -307,6 +376,15 @@ EOF`
     }
     if (process.env.ANTHROPIC_API_KEY) {
       envVars.ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
+    }
+    if (process.env.GEMINI_API_KEY) {
+      envVars.GEMINI_API_KEY = process.env.GEMINI_API_KEY
+    }
+    if (process.env.MOONSHOT_API_KEY) {
+      envVars.MOONSHOT_API_KEY = process.env.MOONSHOT_API_KEY
+    }
+    if (process.env.ZAI_API_KEY) {
+      envVars.ZAI_API_KEY = process.env.ZAI_API_KEY
     }
 
     // Build environment variables string for shell command

@@ -244,7 +244,9 @@ These API keys can be set globally (fallback for all users) or left unset to req
 - `AI_GATEWAY_API_KEY`: AI Gateway API key for branch name generation and Codex (users can override)
 - `CURSOR_API_KEY`: For Cursor agent support (users can override)
 - `GEMINI_API_KEY`: For Google Gemini agent support (users can override)
-- `OPENAI_API_KEY`: For Codex and OpenCode agents (users can override)
+- `OPENAI_API_KEY`: For Codex and OpenCode GPT models (users can override)
+- `MOONSHOT_API_KEY`: For OpenCode Moonshot/Kimi models (users can override)
+- `ZAI_API_KEY`: For OpenCode Z.AI/GLM models (users can override)
 
 > **Note**: Users can provide their own API keys in their profile settings, which take precedence over global environment variables.
 
@@ -372,7 +374,7 @@ This release introduces **user authentication** and **major security improvement
 
 - **Multi-User Support**
   - Each user has their own tasks and connectors
-  - Users can manage their own API keys (Anthropic, OpenAI, Cursor, Gemini, AI Gateway)
+  - Users can manage their own API keys (Anthropic, OpenAI, Cursor, Gemini, AI Gateway, Moonshot, Z.AI)
   - GitHub account connection for repository access
 
 - **Security Enhancements**

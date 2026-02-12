@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserApiKey } from '@/lib/api-keys/user-keys'
 
-type Provider = 'openai' | 'gemini' | 'cursor' | 'anthropic' | 'aigateway'
+type Provider = 'openai' | 'gemini' | 'cursor' | 'anthropic' | 'aigateway' | 'moonshot' | 'zai'
 
 // Map agents to their required providers
 const AGENT_PROVIDER_MAP: Record<string, Provider | null> = {
@@ -10,7 +10,7 @@ const AGENT_PROVIDER_MAP: Record<string, Provider | null> = {
   copilot: null, // Copilot uses user's GitHub token from their account
   cursor: 'cursor',
   gemini: 'gemini',
-  opencode: 'openai', // OpenCode can use OpenAI or Anthropic, but primarily OpenAI
+  opencode: 'openai', // OpenCode provider is selected dynamically by model
 }
 
 // Check if a model is an Anthropic model
@@ -32,6 +32,18 @@ function isGeminiModel(model: string): boolean {
   const geminiPatterns = ['gemini']
   const lowerModel = model.toLowerCase()
   return geminiPatterns.some((pattern) => lowerModel.includes(pattern))
+}
+
+function isMoonshotModel(model: string): boolean {
+  const moonshotPatterns = ['moonshot', 'kimi']
+  const lowerModel = model.toLowerCase()
+  return moonshotPatterns.some((pattern) => lowerModel.includes(pattern))
+}
+
+function isZaiModel(model: string): boolean {
+  const zaiPatterns = ['zai', 'glm']
+  const lowerModel = model.toLowerCase()
+  return zaiPatterns.some((pattern) => lowerModel.includes(pattern))
 }
 
 export async function GET(req: NextRequest) {
@@ -69,11 +81,13 @@ export async function GET(req: NextRequest) {
         provider = 'anthropic'
       } else if (isGeminiModel(model)) {
         provider = 'gemini'
+      } else if (isMoonshotModel(model)) {
+        provider = 'moonshot'
+      } else if (isZaiModel(model)) {
+        provider = 'zai'
       } else if (isOpenAIModel(model)) {
-        // For OpenAI models, prefer AI Gateway if available, otherwise use OpenAI
-        provider = 'aigateway'
+        provider = agent === 'opencode' ? 'openai' : 'aigateway'
       }
-      // For cursor with no recognizable pattern, keep the default 'cursor' provider
     }
 
     // Check if API key is available (either user's or system)

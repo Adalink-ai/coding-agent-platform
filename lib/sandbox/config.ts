@@ -7,7 +7,10 @@ export function validateEnvironmentVariables(
     CURSOR_API_KEY?: string
     ANTHROPIC_API_KEY?: string
     AI_GATEWAY_API_KEY?: string
+    MOONSHOT_API_KEY?: string
+    ZAI_API_KEY?: string
   },
+  selectedModel?: string,
 ) {
   const errors: string[] = []
 
@@ -29,15 +32,36 @@ export function validateEnvironmentVariables(
   }
 
   if (selectedAgent === 'opencode') {
-    // OpenCode can use either AI Gateway (for GPT models) or Anthropic (for Claude models)
-    // We require at least one to be present
-    const hasAiGateway = apiKeys?.AI_GATEWAY_API_KEY || process.env.AI_GATEWAY_API_KEY
-    const hasAnthropic = apiKeys?.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY
+    const normalizedModel = selectedModel?.toLowerCase() || ''
 
-    if (!hasAiGateway && !hasAnthropic) {
-      errors.push(
-        'Either AI_GATEWAY_API_KEY or ANTHROPIC_API_KEY is required for OpenCode CLI. Please add at least one API key in your profile.',
-      )
+    if (normalizedModel.includes('moonshot') || normalizedModel.includes('kimi')) {
+      if (!apiKeys?.MOONSHOT_API_KEY && !process.env.MOONSHOT_API_KEY) {
+        errors.push(
+          'MOONSHOT_API_KEY is required for OpenCode Moonshot models. Please add your API key in your profile.',
+        )
+      }
+    } else if (normalizedModel.includes('zai') || normalizedModel.includes('glm')) {
+      if (!apiKeys?.ZAI_API_KEY && !process.env.ZAI_API_KEY) {
+        errors.push('ZAI_API_KEY is required for OpenCode Z.AI models. Please add your API key in your profile.')
+      }
+    } else if (normalizedModel.includes('gemini')) {
+      if (!apiKeys?.GEMINI_API_KEY && !process.env.GEMINI_API_KEY) {
+        errors.push('GEMINI_API_KEY is required for OpenCode Gemini models. Please add your API key in your profile.')
+      }
+    } else if (
+      normalizedModel.includes('claude') ||
+      normalizedModel.includes('sonnet') ||
+      normalizedModel.includes('opus')
+    ) {
+      if (!apiKeys?.ANTHROPIC_API_KEY && !process.env.ANTHROPIC_API_KEY) {
+        errors.push(
+          'ANTHROPIC_API_KEY is required for OpenCode Claude models. Please add your API key in your profile.',
+        )
+      }
+    } else {
+      if (!apiKeys?.OPENAI_API_KEY && !process.env.OPENAI_API_KEY) {
+        errors.push('OPENAI_API_KEY is required for OpenCode GPT models. Please add your API key in your profile.')
+      }
     }
   }
 

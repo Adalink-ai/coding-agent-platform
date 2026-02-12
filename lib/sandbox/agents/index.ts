@@ -29,6 +29,8 @@ export async function executeAgentInSandbox(
     CURSOR_API_KEY?: string
     ANTHROPIC_API_KEY?: string
     AI_GATEWAY_API_KEY?: string
+    MOONSHOT_API_KEY?: string
+    ZAI_API_KEY?: string
   },
   isResumed?: boolean,
   sessionId?: string,
@@ -60,6 +62,8 @@ export async function executeAgentInSandbox(
     CURSOR_API_KEY: process.env.CURSOR_API_KEY,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
     AI_GATEWAY_API_KEY: process.env.AI_GATEWAY_API_KEY,
+    MOONSHOT_API_KEY: process.env.MOONSHOT_API_KEY,
+    ZAI_API_KEY: process.env.ZAI_API_KEY,
     GH_TOKEN: process.env.GH_TOKEN,
     GITHUB_TOKEN: process.env.GITHUB_TOKEN,
   }
@@ -69,6 +73,8 @@ export async function executeAgentInSandbox(
   if (apiKeys?.CURSOR_API_KEY) process.env.CURSOR_API_KEY = apiKeys.CURSOR_API_KEY
   if (apiKeys?.ANTHROPIC_API_KEY) process.env.ANTHROPIC_API_KEY = apiKeys.ANTHROPIC_API_KEY
   if (apiKeys?.AI_GATEWAY_API_KEY) process.env.AI_GATEWAY_API_KEY = apiKeys.AI_GATEWAY_API_KEY
+  if (apiKeys?.MOONSHOT_API_KEY) process.env.MOONSHOT_API_KEY = apiKeys.MOONSHOT_API_KEY
+  if (apiKeys?.ZAI_API_KEY) process.env.ZAI_API_KEY = apiKeys.ZAI_API_KEY
   if (githubToken) {
     process.env.GH_TOKEN = githubToken
     process.env.GITHUB_TOKEN = githubToken
@@ -153,6 +159,8 @@ export async function executeAgentInSandbox(
     process.env.CURSOR_API_KEY = originalEnv.CURSOR_API_KEY
     process.env.ANTHROPIC_API_KEY = originalEnv.ANTHROPIC_API_KEY
     process.env.AI_GATEWAY_API_KEY = originalEnv.AI_GATEWAY_API_KEY
+    process.env.MOONSHOT_API_KEY = originalEnv.MOONSHOT_API_KEY
+    process.env.ZAI_API_KEY = originalEnv.ZAI_API_KEY
     process.env.GH_TOKEN = originalEnv.GH_TOKEN
     process.env.GITHUB_TOKEN = originalEnv.GITHUB_TOKEN
   }
